@@ -1,0 +1,10 @@
+Building LiZi
+
+See doc/readme-qt.rst for instructions on building BERN QT,
+the intended-for-end-users, nice-graphical-interface, reference
+implementation of LiZi.
+
+See doc/build-*.txt for instructions on building LiZid,
+the intended-for-services, no-graphical-interface, reference
+implementation of LiZi.
+

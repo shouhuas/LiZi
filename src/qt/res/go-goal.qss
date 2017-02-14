@@ -1,0 +1,36 @@
+﻿/*****全局******/
+*
+{
+    font-size: 14px;
+	font-family: Microsoft YaHei;
+	/*font-family: "Helvetica Neue", Helvetica, Arial, Microsoft YaHei, sans-serif;*/
+    color: #ffffff;
+}
+/*所有控件disable时的字体颜色*/
+*::disabled
+{
+    color:gray;
+}
+QWidget
+{
+    color: #000000;
+    background-color: #ffefcb;
+}
+
+QPushButton {color:#ffffff;background-color: #ED793A;}
+QPushButton:hover { color: #ffffff; background-color: #ED7930;  }
+QPushButton:checked { color: #ED793A; background-color: #ffefcb;border: none; } 
+QPushButton:pressed {  color: #ED793A; background-color: #ffefcb;border: none;} 
+QPushButton:selected { color: #ffffff; background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #474748, stop:1.0 #353536); margin:0px;padding:0px;border:none; }
+
+
+
+
+QToolButton {color:#ffffff;background-color: #ED793A;}
+QToolButton:hover { color: #ffffff; background-color: #ED7930;border: none;  }
+QToolButton:checked { color: #ED793A; background-color: #ffefcb;border: none; } 
+QToolButton:pressed {  color: #ED793A; background-color: #ffefcb;border: none;} 
+QToolButton:selected { color: #ffffff; background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #474748, stop:1.0 #353536); margin:0px;padding:0px;border:none; }
+#tabsToolbar {  color: #ffffff; background-color: #ffefcb; border: none; } 
+QToolBar::handle { background-color: #ED793A; }
+
