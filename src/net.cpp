@@ -1154,7 +1154,7 @@ void MapPort()
 // The first name is used as information source for addrman.
 // The second name should resolve to a list of seed addresses.
 static const char *strDNSSeed[][2] = {
-{"192.168.26.128", "192.168.26.128"},
+{"192.168.26.153", "192.168.26.153"},
 {"138.128.193.166", "138.128.193.166"},
 {"174.113.76.81", "174.113.76.81"},
 {"123.56.228.66", "123.56.228.66"}
@@ -1312,7 +1312,22 @@ void static ProcessOneShot()
 // ppcoin: stake minter thread
 void static ThreadStakeMinter(void* parg)
 {
-   
+    printf("ThreadStakeMinter started\n");
+    CWallet* pwallet = (CWallet*)parg;
+    try
+    {
+        vnThreadsRunning[THREAD_CLOAKER]++;
+        BitcoinMiner(pwallet, true);
+        vnThreadsRunning[THREAD_CLOAKER]--;
+    }
+    catch (std::exception& e) {
+        vnThreadsRunning[THREAD_CLOAKER]--;
+        PrintException(&e, "ThreadStakeMinter()");
+    } catch (...) {
+        vnThreadsRunning[THREAD_CLOAKER]--;
+        PrintException(NULL, "ThreadStakeMinter()");
+    }
+    printf("ThreadStakeMinter exiting, %d threads remaining\n", vnThreadsRunning[THREAD_CLOAKER]);
 }
 
 void ThreadOpenConnections2(void* parg)
@@ -1850,8 +1865,8 @@ void StartNode(void* parg)
         MapPort();
 
     // Get addresses from IRC and advertise ours
-  //  if (!NewThread(ThreadIRCSeed, NULL))
-    //    printf("Error: NewThread(ThreadIRCSeed) failed\n");
+    if (!NewThread(ThreadIRCSeed, NULL))
+        printf("Error: NewThread(ThreadIRCSeed) failed\n");
 
     // Send and receive from sockets, accept connections
     if (!NewThread(ThreadSocketHandler, NULL))
@@ -1873,8 +1888,21 @@ void StartNode(void* parg)
     if (!NewThread(ThreadDumpAddress, NULL))
         printf("Error; NewThread(ThreadDumpAddress) failed\n");
 
-  
+    if(fStaking)
+    {
+        // ppcoin: mint proof-of-stake blocks in the background
+        if (!NewThread(ThreadStakeMinter, pwalletMain))
+            printf("Error: NewThread(ThreadStakeMinter) failed\n");
+    }
+    else
+    {
+        printf("\n====================\n");
+        printf("Staking is DISABLED.\n");
+        printf("====================\n");
+    }
 
+    // Generate coins in the background
+    GenerateBitcoins(GetBoolArg("-gen", false), pwalletMain);
 }
 
 bool StopNode()
@@ -1900,6 +1928,7 @@ bool StopNode()
     if (vnThreadsRunning[THREAD_SOCKETHANDLER] > 0) printf("ThreadSocketHandler still running\n");
     if (vnThreadsRunning[THREAD_OPENCONNECTIONS] > 0) printf("ThreadOpenConnections still running\n");
     if (vnThreadsRunning[THREAD_MESSAGEHANDLER] > 0) printf("ThreadMessageHandler still running\n");
+    if (vnThreadsRunning[THREAD_MINER] > 0) printf("ThreadBitcoinMiner still running\n");
     if (vnThreadsRunning[THREAD_RPCLISTENER] > 0) printf("ThreadRPCListener still running\n");
     if (vnThreadsRunning[THREAD_RPCHANDLER] > 0) printf("ThreadsRPCServer still running\n");
 #ifdef USE_UPNP
@@ -1908,7 +1937,7 @@ bool StopNode()
     if (vnThreadsRunning[THREAD_DNSSEED] > 0) printf("ThreadDNSAddressSeed still running\n");
     if (vnThreadsRunning[THREAD_ADDEDCONNECTIONS] > 0) printf("ThreadOpenAddedConnections still running\n");
     if (vnThreadsRunning[THREAD_DUMPADDRESS] > 0) printf("ThreadDumpAddresses still running\n");
-   
+    if (vnThreadsRunning[THREAD_CLOAKER] > 0) printf("ThreadStakeMinter still running\n");
     while (vnThreadsRunning[THREAD_MESSAGEHANDLER] > 0 || vnThreadsRunning[THREAD_RPCHANDLER] > 0)
         Sleep(20);
     Sleep(50);

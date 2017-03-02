@@ -598,10 +598,8 @@ bool AppInit2()
     bool fBound = false;
     if (!fNoListen)
     {
-        printf("fNoListen1\n");
         std::string strError;
         if (mapArgs.count("-bind")) {
-             printf("fNoListen133\n");
             BOOST_FOREACH(std::string strBind, mapMultiArgs["-bind"]) {
                 CService addrBind;
                 if (!Lookup(strBind.c_str(), addrBind, GetListenPort(), false))
@@ -609,7 +607,6 @@ bool AppInit2()
                 fBound |= Bind(addrBind);
             }
         } else {
-             printf("fNoListen21\n");
             struct in_addr inaddr_any;
             inaddr_any.s_addr = INADDR_ANY;
 #ifdef USE_IPV6
