@@ -350,20 +350,6 @@ private:
 };
 
 
-/** Access to the transaction database (blkindex.dat) */
-class CTransactionDB : public CDB
-{
-public:
-	CTransactionDB(const char* pszMode = "wr+") : CDB("blktran.dat", pszMode) { }
-private:
-	CTransactionDB(const CTransactionDB&);
-	void operator=(const CTransactionDB&);
-public:
-	bool ReadAll(std::map<uint256, CTransaction> &mapTx);
-	bool ReadTx(uint256 hash, CTransaction& txindex);
-	bool WriteTx(uint256 hash, const CTransaction& wtx);
-};
-
 
 
 /** Access to the (IP) address database (peers.dat) */
